@@ -1,12 +1,14 @@
-// Copyright 2020 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
+import 'package:aumae_tracker/Forms/addExpense.dart';
+import 'package:aumae_tracker/screens/testingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:aumae_tracker/models/favorites.dart';
-import 'package:aumae_tracker/screens/favorites.dart';
+import 'package:aumae_tracker/screens/vehiclePage.dart';
+import 'package:aumae_tracker/Database/database.dart';
+
+import '../main.dart';
+
 
 class HomePage extends StatelessWidget {
   static const routeName = '/';
@@ -21,63 +23,101 @@ class HomePage extends StatelessWidget {
         actions: [
           TextButton.icon(
             onPressed: () {
-              context.go(FavoritesPage.fullPath);
+              context.go(VehiclesPage.fullPath);
             },
             icon: const Icon(Icons.favorite_border),
             label: const Text('Favorites'),
           ),
+          TextButton.icon(
+            onPressed: () {
+              context.go(testingPage.fullPath);
+            },
+            icon: const Icon(Icons.adb),
+            label: const Text('Testing'),
+          ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: 100,
-        cacheExtent: 20.0,
-        controller: ScrollController(),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        itemBuilder: (context, index) => ItemTile(index),
+      body: Center(
+        child: FutureBuilder<List<expenseList>>(
+          //DatabaseHelper.instance.getList()
+            future: dbHelper.getExpenseList(),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<expenseList>> snapshot) {
+              if (!snapshot.hasData) {
+                return Center(child: Text('Loading...'));
+              }
+              return snapshot.data!.isEmpty
+                  ? Center(child: Text('No items in List'))
+                  : ListView(
+                children: snapshot.data!.map((expenseList) {
+                  var expenseName = expenseList.expenseName;
+                  var expenseTotalCost = expenseList.expenseTotalCost;
+                  var expenseFuelAmount = expenseList.expenseFuelAmount;
+                  var expenseFuelCost = expenseList.expenseFuelCost;
+                  var expenseType = expenseList.expenseType;
+                  var expenseVehicleIdentification = expenseList.expenseVehicleIdentification;
+                  if(expenseType == '1') { //other expense
+                    return Center(
+                        child: Card(
+                          child: ListTile(
+                            onLongPress: () async {
+                              await dbHelper.removeExpenseRecord(expenseList.id!);
+                            },
+                            onTap: () async {
+                            },
+                            contentPadding: EdgeInsets.all(5),
+                            leading: Icon(Icons.local_gas_station),
+                            title: Column(
+                              children: [
+                                Center(child: Text("Expense name: $expenseName!")),
+                                Center(child: Text(expenseTotalCost)),
+                              ],
+                            ),
+
+                          ),
+                        ));
+                  } else { //refuel expense
+                    return Center(
+                        child: Card(
+                          child: ListTile(
+                            onLongPress: () {
+                            },
+                            onTap: () async {
+                            },
+                            contentPadding: EdgeInsets.all(5),
+                            leading: Icon(Icons.local_gas_station),
+                            title: Column(
+                              children: [
+                                Center(child: Text(expenseTotalCost)),
+
+                              ],
+                            ),
+                          ),
+                        ));
+                  }
+                }).toList(),
+              );
+            }),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.go(addExpensePage.fullPath);
+        },
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.navigation),
       ),
     );
   }
 }
 
-class ItemTile extends StatelessWidget {
-  final int itemNo;
-
-  const ItemTile(this.itemNo, {super.key});
-
-  @override
+class StatmentExample extends StatelessWidget {
   Widget build(BuildContext context) {
-    final favoritesList = context.watch<Favorites>();
+    return Text((() {
+      if(true){
+        return "tis true";}
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.primaries[itemNo % Colors.primaries.length],
-        ),
-        title: Text(
-          'Item $itemNo',
-          key: Key('text_$itemNo'),
-        ),
-        trailing: IconButton(
-          key: Key('icon_$itemNo'),
-          icon: favoritesList.items.contains(itemNo)
-              ? const Icon(Icons.favorite)
-              : const Icon(Icons.favorite_border),
-          onPressed: () {
-            !favoritesList.items.contains(itemNo)
-                ? favoritesList.add(itemNo)
-                : favoritesList.remove(itemNo);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(favoritesList.items.contains(itemNo)
-                    ? 'Added to favorites.'
-                    : 'Removed from favorites.'),
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          },
-        ),
-      ),
-    );
+      return "anything but true";
+    })());
   }
 }
+
