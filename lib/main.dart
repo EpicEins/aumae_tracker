@@ -23,8 +23,8 @@ GoRouter router() {
   return GoRouter(
     routes: [
       GoRoute(
-        path: HomePage.routeName,
-        builder: (context, state) => const HomePage(),
+        path: MainPage.routeName,
+        builder: (context, state) => MainPage(),
         routes: [
           GoRoute(
             path: testingPage.routeName,
@@ -32,7 +32,7 @@ GoRouter router() {
           ),
           GoRoute(
             path: VehiclesPage.routeName,
-            builder: (context, state) => const VehiclesPage(),
+            builder: (context, state) => VehiclesPage(),
           ),
           GoRoute(
             path: addExpensePage.routeName,

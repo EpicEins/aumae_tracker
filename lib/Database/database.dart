@@ -142,6 +142,9 @@ class DatabaseHelper {
   Future<int> removeExpenseRecord(int id) async {
     return await _db.delete('expenseList', where: 'id = ?', whereArgs: [id]);
   }
+  Future<int> removeVehicle(int id) async {
+    return await _db.delete('vehicleList', where: 'id = ?', whereArgs: [id]);
+  }
 
 }
 

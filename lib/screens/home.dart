@@ -9,12 +9,14 @@ import 'package:aumae_tracker/Database/database.dart';
 
 import '../main.dart';
 
-
-class HomePage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   static const routeName = '/';
+  @override
+  HomePage createState() => HomePage();
 
-  const HomePage({super.key});
+}
 
+class HomePage extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +41,7 @@ class HomePage extends StatelessWidget {
       ),
       body: Center(
         child: FutureBuilder<List<expenseList>>(
-          //DatabaseHelper.instance.getList()
+            //DatabaseHelper.instance.getList()
             future: dbHelper.getExpenseList(),
             builder: (BuildContext context,
                 AsyncSnapshot<List<expenseList>> snapshot) {
@@ -49,54 +51,62 @@ class HomePage extends StatelessWidget {
               return snapshot.data!.isEmpty
                   ? Center(child: Text('No items in List'))
                   : ListView(
-                children: snapshot.data!.map((expenseList) {
-                  var expenseName = expenseList.expenseName;
-                  var expenseTotalCost = expenseList.expenseTotalCost;
-                  var expenseFuelAmount = expenseList.expenseFuelAmount;
-                  var expenseFuelCost = expenseList.expenseFuelCost;
-                  var expenseType = expenseList.expenseType;
-                  var expenseVehicleIdentification = expenseList.expenseVehicleIdentification;
-                  if(expenseType == '1') { //other expense
-                    return Center(
-                        child: Card(
-                          child: ListTile(
-                            onLongPress: () async {
-                              await dbHelper.removeExpenseRecord(expenseList.id!);
-                            },
-                            onTap: () async {
-                            },
-                            contentPadding: EdgeInsets.all(5),
-                            leading: Icon(Icons.local_gas_station),
-                            title: Column(
-                              children: [
-                                Center(child: Text("Expense name: $expenseName!")),
-                                Center(child: Text(expenseTotalCost)),
-                              ],
+                      children: snapshot.data!.map((expenseList) {
+                        var expenseName = expenseList.expenseName;
+                        var expenseTotalCost = expenseList.expenseTotalCost;
+                        var expenseFuelAmount = expenseList.expenseFuelAmount;
+                        var expenseFuelCost = expenseList.expenseFuelCost;
+                        var expenseType = expenseList.expenseType;
+                        var expenseVehicleIdentification =
+                            expenseList.expenseVehicleIdentification;
+                        if (expenseType == '1') {
+                          //other expense
+                          return Center(
+                              child: Card(
+                            child: ListTile(
+                              onLongPress: () async {
+                                await dbHelper
+                                    .removeExpenseRecord(expenseList.id!);
+                                setState(() {
+                                });
+                              },
+                              onTap: () async {},
+                              contentPadding: EdgeInsets.all(5),
+                              leading: Icon(Icons.local_gas_station),
+                              title: Column(
+                                children: [
+                                  Center(
+                                      child:
+                                          Text("Expense name: $expenseName!")),
+                                  Center(child: Text(expenseTotalCost)),
+                                ],
+                              ),
                             ),
-
-                          ),
-                        ));
-                  } else { //refuel expense
-                    return Center(
-                        child: Card(
-                          child: ListTile(
-                            onLongPress: () {
-                            },
-                            onTap: () async {
-                            },
-                            contentPadding: EdgeInsets.all(5),
-                            leading: Icon(Icons.local_gas_station),
-                            title: Column(
-                              children: [
-                                Center(child: Text(expenseTotalCost)),
-
-                              ],
+                          ));
+                        } else {
+                          //refuel expense
+                          return Center(
+                              child: Card(
+                            child: ListTile(
+                              onLongPress: () async {
+                                await dbHelper
+                                    .removeExpenseRecord(expenseList.id!);
+                                setState(() {
+                                });
+                              },
+                              onTap: () async {},
+                              contentPadding: EdgeInsets.all(5),
+                              leading: Icon(Icons.local_gas_station),
+                              title: Column(
+                                children: [
+                                  Center(child: Text(expenseTotalCost)),
+                                ],
+                              ),
                             ),
-                          ),
-                        ));
-                  }
-                }).toList(),
-              );
+                          ));
+                        }
+                      }).toList(),
+                    );
             }),
       ),
       floatingActionButton: FloatingActionButton(
@@ -108,16 +118,9 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-}
 
-class StatmentExample extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return Text((() {
-      if(true){
-        return "tis true";}
-
-      return "anything but true";
-    })());
+  UnimplementedError() {
+    // TODO: implement UnimplementedError
+    throw UnimplementedError();
   }
 }
-
