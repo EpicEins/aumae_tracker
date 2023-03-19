@@ -36,7 +36,7 @@ GoRouter router() {
           ),
           GoRoute(
             path: addExpensePage.routeName,
-            builder: (context, state) => addExpensePage(),
+            builder: (context, state) => addExpensePage(title: 'Vehicle Expense',),
           ),
         ],
       ),

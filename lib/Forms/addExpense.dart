@@ -13,12 +13,37 @@ DateTime date = DateTime.fromMillisecondsSinceEpoch(now);
 final DateFormat formatter = DateFormat('MM-dd-yyyy');
 final String formattedDateNow = formatter.format(date);
 
-class addExpensePage extends StatelessWidget {
+class addExpensePage extends StatefulWidget {
+  const addExpensePage({Key? key, required this.title}) : super(key: key);
+  static const routeName = 'addExpensePage';
+  static const fullPath = '/$routeName';
+
+  final String title;
+
+  @override
+  State<addExpensePage> createState() => addExpensePageState();
+}
+
+class addExpensePageState extends State<addExpensePage> {
+  DateTime selectedDate = DateTime.now();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
   static const routeName = 'add_expense_page';
   static const fullPath = '/$routeName';
   final _dateController = TextEditingController();
 
-  addExpensePage({super.key});
 
   final _formKey = GlobalKey<FormState>();
 
@@ -41,47 +66,43 @@ class addExpensePage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
-                        initialValue: "Expense Name",
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-
-                        enabled: false,
-                        controller: _dateController,
-                        onTap: () async {
-                          var newDate = await showCalendarDatePicker2Dialog(
-                            context: context,
-                            config:
-                                CalendarDatePicker2WithActionButtonsConfig(),
-
-                            dialogSize: const Size(325, 400),
-                            initialValue: [],
-                            borderRadius: BorderRadius.circular(15),
-                          );
-                          if (newDate.toString() == null) {
-                            _dateController.text = formattedDateNow.toString();
-                          } else {
-                            DateTime date = DateTime.fromMillisecondsSinceEpoch(now);
-
-                            final DateFormat formatter = DateFormat('MM-dd-yyyy');
-                            final String formattedDateNow = formatter.format(date);
-                            var formattedNewDate;
-                            for (var i in newDate!) {
-                              formattedNewDate = formatter.format(i!);
-                            }
-                            //_dateController.text = newDate.toString();
-                            _dateController.text = formattedNewDate.toString();
-                          }
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.person),
+                          labelText: 'Expense Name *',
+                        ),
+                        onSaved: (String? value) {
+                          // This optional block of code can be used to run
+                          // code when the user saves the form.
+                        },
+                        validator: (String? value) {
+                          return (value != null) ? 'Please enter a name' : null;
                         },
                       ),
                     ),
                   ),
                 ],
               ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("${selectedDate.toLocal()}".split(' ')[0]),
+                        ),
+                        const SizedBox(height: 20.0,),
+                        ElevatedButton(
+                          onPressed: () => _selectDate(context),
+                          child: const Text('Select date'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
               // Add TextFormFields and ElevatedButton here.
             ],
           ),
